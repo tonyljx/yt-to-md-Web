@@ -1,8 +1,8 @@
 "use client";
-import React from "react";
+import React, { useRef } from "react";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm } from "react-hook-form";
+import { useFieldArray, useForm } from "react-hook-form";
 import { Button } from "@/components/ui/button";
 import {
   Form,
@@ -14,7 +14,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { CornerDownLeft, CornerDownLeftIcon } from "lucide-react";
+import { CornerDownLeft, CornerDownLeftIcon, X } from "lucide-react";
 import toast from "react-hot-toast";
 
 // 定义 YouTube URL 的正则表达式
@@ -30,6 +30,14 @@ const formSchema = z.object({
     .refine((value) => youtubeUrlRegex.test(value), {
       message: "URL must be a valid YouTube video link.",
     }),
+  chapters: z.array(
+    z.object({
+      name: z.string().min(1, { message: "Product Name is required" }),
+      description: z.string().min(1, {
+        message: "Product Description is required",
+      }),
+    }),
+  ),
 });
 
 type Props = {};
@@ -40,11 +48,23 @@ export default function UrlInputForm({}: Props) {
     resolver: zodResolver(formSchema),
     defaultValues: {
       url: "",
+      chapters: [],
     },
   });
 
+  // 动态元素(允许增加chapter)
+  const { fields, append, remove } = useFieldArray({
+    name: "chapters",
+    control: form.control,
+  });
+
+  // https://github.com/Pondorasti/emojis/blob/9e6c3f0f4308a99eccfe8ec479a84a3051dfaf52/src/app/_components/emoji-form/index.tsx
+  const submitRef = useRef<React.ElementRef<"button">>(null);
+
   // 2. Define a submit handler.
   function onSubmit(values: z.infer<typeof formSchema>) {
+    console.log(values);
+    console.log("onSubmit");
     // Do something with the form values.
     // ✅ This will be type-safe and validated.
     if (!values.url) {
@@ -72,6 +92,12 @@ export default function UrlInputForm({}: Props) {
                   <Input
                     className=" w-full rounded-md border pr-[2rem]  focus-visible:ring-0 focus-visible:ring-transparent focus-visible:ring-offset-0  md:w-[28vw] "
                     placeholder="url"
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter") {
+                        e.preventDefault();
+                        submitRef.current?.click();
+                      }
+                    }}
                     {...field}
                   />
                   <CornerDownLeftIcon className="absolute right-2 h-6 w-6" />
@@ -82,13 +108,72 @@ export default function UrlInputForm({}: Props) {
             </FormItem>
           )}
         />
-        {/* <Button
-          // className="flex aspect-square h-8 w-8 items-center justify-center rounded-lg text-white outline-0 ring-0 hover:bg-white/25 focus:bg-white/25"
-          type="submit"
-          variant="outline"
-        >
-          <CornerDownLeft className="h-4 w-4" />
-        </Button> */}
+
+        {/* dynamic */}
+        {/* Dynamic chapters */}
+        <div className="mt-6">
+          {fields.length > 0 && (
+            <h3 className="mb-2 text-lg font-semibold">Chapters (Optional)</h3>
+          )}
+
+          {fields.map((field, index) => (
+            <div key={field.id} className="mb-2 flex gap-2">
+              <FormField
+                control={form.control}
+                name={`chapters.${index}.name`}
+                render={({ field }) => (
+                  <FormItem>
+                    <FormControl>
+                      <Input
+                        className="w-full rounded-md border focus-visible:ring-0 focus-visible:ring-transparent focus-visible:ring-offset-0"
+                        placeholder="Chapter Name"
+                        {...field}
+                      />
+                    </FormControl>
+                    <FormMessage className="mt-3" />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name={`chapters.${index}.description`}
+                render={({ field }) => (
+                  <FormItem>
+                    <FormControl>
+                      <Input
+                        className="w-full rounded-md border focus-visible:ring-0 focus-visible:ring-transparent focus-visible:ring-offset-0"
+                        placeholder="Chapter Description"
+                        {...field}
+                      />
+                    </FormControl>
+                    <FormMessage className="mt-3" />
+                  </FormItem>
+                )}
+              />
+              <Button
+                type="button"
+                variant="ghost"
+                onClick={() => remove(index)}
+                className="rounded"
+              >
+                <X className="text-red-500" />
+              </Button>
+            </div>
+          ))}
+        </div>
+
+        <div className="mt-6 flex justify-center gap-3">
+          <Button
+            type="button"
+            onClick={() => append({ name: "", description: "" })}
+          >
+            Add Chapter
+          </Button>
+
+          <Button type="submit" ref={submitRef}>
+            Submit
+          </Button>
+        </div>
       </form>
     </Form>
   );
