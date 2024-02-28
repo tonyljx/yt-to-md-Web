@@ -3,12 +3,11 @@ import Loading from "@/components/loading";
 import MarkdownEditor from "@/components/markdown-editor";
 import Note from "@/components/note";
 import UrlInputForm from "@/components/url-input";
-import Image from "next/image";
 import { Suspense } from "react";
 
 export default function Home() {
   return (
-    <main className="container flex min-h-screen flex-col items-center gap-8 p-10 md:p-24 md:pt-10">
+    <section className="flex flex-col items-center">
       <Header />
       {/* <Image
         src="/vercel.svg"
@@ -17,7 +16,7 @@ export default function Home() {
         height={24}
         priority
       /> */}
-      <div className="flex flex-col items-center justify-center py-[10vh] sm:py-[15vh]">
+      <div className="flex flex-col items-center justify-center border-b-2 py-[5vh] sm:py-[10vh]">
         <h1 className="mb-3 text-4xl font-medium text-black duration-1000 ease-in-out animate-in fade-in slide-in-from-bottom-3">
           MarkTube
         </h1>
@@ -33,11 +32,13 @@ export default function Home() {
         </div> */}
       </div>
 
-      <Suspense fallback={<Loading />}>
+      {/* <Suspense fallback={<Loading />}>
         <Note />
-      </Suspense>
+      </Suspense> */}
 
-      <MarkdownEditor />
-    </main>
+      <Suspense fallback={<Loading />}>
+        <MarkdownEditor />
+      </Suspense>
+    </section>
   );
 }

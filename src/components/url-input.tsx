@@ -1,5 +1,5 @@
 "use client";
-import React, { useRef } from "react";
+import React, { useRef, useState } from "react";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useFieldArray, useForm } from "react-hook-form";
@@ -14,14 +14,15 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { CornerDownLeft, CornerDownLeftIcon, X } from "lucide-react";
+import { CornerDownLeft, CornerDownLeftIcon, Loader2, X } from "lucide-react";
 import toast from "react-hot-toast";
+import { useRouter } from "next/navigation";
 
 // 定义 YouTube URL 的正则表达式
 const youtubeUrlRegex =
   /^https:\/\/www\.youtube\.com\/watch\?v=([a-zA-Z0-9_-]+)$/;
 
-const formSchema = z.object({
+export const formSchema = z.object({
   url: z
     .string()
     // 首先确保是有效的 URL
@@ -43,6 +44,9 @@ const formSchema = z.object({
 type Props = {};
 
 export default function UrlInputForm({}: Props) {
+  const [loading, setLoading] = useState(false);
+
+  const router = useRouter();
   // 1. Define your form.
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -63,16 +67,45 @@ export default function UrlInputForm({}: Props) {
 
   // 2. Define a submit handler.
   function onSubmit(values: z.infer<typeof formSchema>) {
-    console.log(values);
-    console.log("onSubmit");
-    // Do something with the form values.
-    // ✅ This will be type-safe and validated.
+    setLoading(true);
     if (!values.url) {
       return;
     }
     const matches = values.url.match(youtubeUrlRegex);
     const videoId = matches ? matches[1] : null;
-    toast.success(`Videoid: ${videoId}`);
+
+    const postData = {
+      videoId,
+      chapters: values.chapters,
+    };
+    fetch(`/api/sub?videoId=${videoId}`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(postData),
+    })
+      .then((response) => {
+        if (response.status === 200) {
+          // console.log("Success");
+          return response.json();
+        } else {
+          throw new Error("Failed to fetch");
+        }
+      })
+      .then((data) => {
+        toast.success(`${data?.message} ready to redirect`);
+        setTimeout(() => {
+          router.push(`/video/${videoId}`);
+        });
+      })
+      .catch((error) => {
+        console.error("Error:", error);
+        toast.error("upload failed");
+      })
+      .finally(() => {
+        setLoading(false);
+      });
   }
 
   return (
@@ -133,7 +166,7 @@ export default function UrlInputForm({}: Props) {
                     <FormControl>
                       <Input
                         className="w-full rounded-md border focus-visible:ring-0 focus-visible:ring-transparent focus-visible:ring-offset-0"
-                        placeholder="title e.g.(2:33)"
+                        placeholder="title e.g.(Intro Section)"
                         {...field}
                       />
                     </FormControl>
@@ -149,7 +182,7 @@ export default function UrlInputForm({}: Props) {
                     <FormControl>
                       <Input
                         className="w-full rounded-md border focus-visible:ring-0 focus-visible:ring-transparent focus-visible:ring-offset-0"
-                        placeholder="timestamp e.g.(2:33)"
+                        placeholder="timestamp e.g.(2.33)"
                         {...field}
                       />
                     </FormControl>
@@ -177,7 +210,13 @@ export default function UrlInputForm({}: Props) {
             Add Chapter
           </Button>
 
-          <Button type="submit" ref={submitRef}>
+          <Button
+            type="submit"
+            className="flex items-center gap-2"
+            ref={submitRef}
+            disabled={loading}
+          >
+            {loading && <Loader2 className="animate-spin" />}
             Submit
           </Button>
         </div>

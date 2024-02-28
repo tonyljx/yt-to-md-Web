@@ -6,7 +6,6 @@ const inter = Inter({ subsets: ["latin"] });
 
 import { Inter as FontSans } from "next/font/google";
 import { cn } from "@/lib/utils";
-import Header from "@/components/header";
 import { Toaster } from "react-hot-toast";
 
 const fontSans = FontSans({
@@ -30,7 +29,9 @@ export default function RootLayout({
         className={cn("bg-background font-sans antialiased", fontSans.variable)}
       >
         <AntdRegistry>
-          {children}
+          <main className="container  min-h-screen  gap-8 p-10 md:p-24 md:pt-10">
+            {children}
+          </main>
 
           <Toaster />
         </AntdRegistry>

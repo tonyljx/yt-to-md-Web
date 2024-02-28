@@ -19,11 +19,15 @@ const plugins = [
   // Add more plugins here
 ];
 
-export default function MarkdownEditor() {
-  const [value, setValue] = useState(
-    "# Article\n\n\n```js\nconst a = 1233;\nconst func = () => {\n    return 123;\n}\n```\n\n## list\n1. - item1\n2. - item2\n3. - item3\n\n\n| Heading | aaaaaaaaaa | baaaaaaaaa |\n| --- | --- | --- |\n| 1 | 2 | 3 |\n\n ## Gemoji\n Thumbs up: :+1:, thumbs down: :-1:.",
-  );
-
+export default function MarkdownEditorOut({
+  value,
+  setValue,
+  className,
+}: {
+  value: string;
+  setValue: (value: string) => void;
+  className?: string;
+}) {
   const [mode, setMode] = useState<"edit" | "preview" | undefined>("edit");
 
   const handleToggle = () => {
@@ -36,6 +40,7 @@ export default function MarkdownEditor() {
     <div
       className={cn(
         "prose lg:prose-lg dark:prose-invert flex h-full w-[50vw] flex-col gap-2",
+        className,
       )}
     >
       {/*  prose-code:bg-white lg:prose-sm dark:prose-invert */}
