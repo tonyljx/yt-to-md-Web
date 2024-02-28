@@ -32,8 +32,8 @@ const formSchema = z.object({
     }),
   chapters: z.array(
     z.object({
-      name: z.string().min(1, { message: "Product Name is required" }),
-      description: z.string().min(1, {
+      title: z.string().min(1, { message: "Product Name is required" }),
+      timestamp: z.string().min(1, {
         message: "Product Description is required",
       }),
     }),
@@ -88,10 +88,10 @@ export default function UrlInputForm({}: Props) {
             <FormItem>
               {/* <FormLabel>Youtube Url</FormLabel> */}
               <FormControl>
-                <div className="relative flex w-full items-center gap-3">
+                <div className="relative flex w-full items-center gap-3 self-start">
                   <Input
                     className=" w-full rounded-md border pr-[2rem]  focus-visible:ring-0 focus-visible:ring-transparent focus-visible:ring-offset-0  md:w-[28vw] "
-                    placeholder="url"
+                    placeholder="Input a youtube URL"
                     onKeyDown={(e) => {
                       if (e.key === "Enter") {
                         e.preventDefault();
@@ -113,20 +113,27 @@ export default function UrlInputForm({}: Props) {
         {/* Dynamic chapters */}
         <div className="mt-6">
           {fields.length > 0 && (
-            <h3 className="mb-2 text-lg font-semibold">Chapters (Optional)</h3>
+            <>
+              <h3 className="mb-2 text-lg font-semibold">
+                Chapters (Optional)
+              </h3>
+              <p className="duration-1200 mb-3 text-base text-gray-500 ease-in-out animate-in fade-in slide-in-from-bottom-4">
+                Help segment the video subtitles
+              </p>
+            </>
           )}
 
           {fields.map((field, index) => (
             <div key={field.id} className="mb-2 flex gap-2">
               <FormField
                 control={form.control}
-                name={`chapters.${index}.name`}
+                name={`chapters.${index}.title`}
                 render={({ field }) => (
                   <FormItem>
                     <FormControl>
                       <Input
                         className="w-full rounded-md border focus-visible:ring-0 focus-visible:ring-transparent focus-visible:ring-offset-0"
-                        placeholder="Chapter Name"
+                        placeholder="title e.g.(2:33)"
                         {...field}
                       />
                     </FormControl>
@@ -136,13 +143,13 @@ export default function UrlInputForm({}: Props) {
               />
               <FormField
                 control={form.control}
-                name={`chapters.${index}.description`}
+                name={`chapters.${index}.timestamp`}
                 render={({ field }) => (
                   <FormItem>
                     <FormControl>
                       <Input
                         className="w-full rounded-md border focus-visible:ring-0 focus-visible:ring-transparent focus-visible:ring-offset-0"
-                        placeholder="Chapter Description"
+                        placeholder="timestamp e.g.(2:33)"
                         {...field}
                       />
                     </FormControl>
@@ -165,7 +172,7 @@ export default function UrlInputForm({}: Props) {
         <div className="mt-6 flex justify-center gap-3">
           <Button
             type="button"
-            onClick={() => append({ name: "", description: "" })}
+            onClick={() => append({ title: "", timestamp: "" })}
           >
             Add Chapter
           </Button>

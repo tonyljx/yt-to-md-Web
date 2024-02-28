@@ -15,7 +15,7 @@ const fontSans = FontSans({
 });
 
 export const metadata: Metadata = {
-  title: "VNote",
+  title: "MarkTube",
   description: "convert youtube video to markdown note",
 };
 
