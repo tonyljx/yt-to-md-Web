@@ -22,7 +22,7 @@ export async function GET(request: Request) {
     errorResponse("fail to fetch google video info");
   }
 
-  return new Response(json, {
+  return new Response(JSON.stringify(json), {
     status: 200,
     headers: {
       "Content-Type": "application/json",
