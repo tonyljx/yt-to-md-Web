@@ -35,7 +35,7 @@ export default function MarkdownEditor() {
   return (
     <div
       className={cn(
-        "prose lg:prose-lg dark:prose-invert flex h-full w-[50vw] flex-col gap-2",
+        "prose flex h-full w-[50vw] flex-col gap-2 dark:prose-invert lg:prose-lg prose-code:bg-white",
       )}
     >
       {/*  prose-code:bg-white lg:prose-sm dark:prose-invert */}

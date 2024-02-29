@@ -45,6 +45,7 @@ type Props = {};
 
 export default function UrlInputForm({}: Props) {
   const [loading, setLoading] = useState(false);
+  const [parseLoading, setParseLoading] = useState(false);
 
   const router = useRouter();
   // 1. Define your form.
@@ -105,6 +106,34 @@ export default function UrlInputForm({}: Props) {
       })
       .finally(() => {
         setLoading(false);
+      });
+  }
+
+  function onParse(values: z.infer<typeof formSchema>) {
+    toast.success(JSON.stringify(values));
+    if (!values.url) {
+      return;
+    }
+    const matches = values.url.match(youtubeUrlRegex);
+    const videoId = matches ? matches[1] : null;
+    setParseLoading(true);
+    fetch(`/api/video?videoId=${videoId}`)
+      .then((response) => {
+        if (response.status === 200) {
+          return response.json();
+        } else {
+          throw new Error("Failed to fetch");
+        }
+      })
+      .then((data) => {
+        toast.success(`${data?.message} parse success`);
+      })
+      .catch((error) => {
+        console.error("Error:", error);
+        toast.error("parse failed");
+      })
+      .finally(() => {
+        setParseLoading(false);
       });
   }
 
@@ -204,13 +233,6 @@ export default function UrlInputForm({}: Props) {
 
         <div className="mt-6 flex justify-center gap-3">
           <Button
-            type="button"
-            onClick={() => append({ title: "", timestamp: "" })}
-          >
-            Add Chapter
-          </Button>
-
-          <Button
             type="submit"
             className="flex items-center gap-2"
             ref={submitRef}
@@ -218,6 +240,25 @@ export default function UrlInputForm({}: Props) {
           >
             {loading && <Loader2 className="animate-spin" />}
             Submit
+          </Button>
+
+          <Button
+            type="button"
+            variant="secondary"
+            onClick={() => append({ title: "", timestamp: "" })}
+          >
+            Add Chapter
+          </Button>
+
+          <Button
+            type="button"
+            variant="secondary"
+            onClick={() => onParse(form.getValues())}
+            disabled={parseLoading}
+            className="flex items-center gap-2"
+          >
+            {parseLoading && <Loader2 className="animate-spin" />}
+            Parse Video
           </Button>
         </div>
       </form>
