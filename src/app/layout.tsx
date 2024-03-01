@@ -1,12 +1,13 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
-import { AntdRegistry } from "@ant-design/nextjs-registry";
+
 const inter = Inter({ subsets: ["latin"] });
 
 import { Inter as FontSans } from "next/font/google";
 import { cn } from "@/lib/utils";
 import { Toaster } from "react-hot-toast";
+import Header from "@/components/header";
 
 const fontSans = FontSans({
   subsets: ["latin"],
@@ -28,13 +29,12 @@ export default function RootLayout({
       <body
         className={cn("bg-background font-sans antialiased", fontSans.variable)}
       >
-        <AntdRegistry>
-          <main className="container  min-h-screen  gap-8 p-10 md:p-24 md:pt-10">
-            {children}
-          </main>
+        <Header />
+        <main className="container  min-h-screen  gap-8 p-10 md:p-24 md:pt-10">
+          {children}
+        </main>
 
-          <Toaster />
-        </AntdRegistry>
+        <Toaster />
       </body>
     </html>
   );

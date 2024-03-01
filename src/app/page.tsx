@@ -10,7 +10,7 @@ import { Suspense } from "react";
 export default function Home() {
   return (
     <section className="flex flex-col items-center">
-      <Header />
+      
       {/* <Image
         src="/vercel.svg"
         alt="Vercel Logo"
@@ -19,6 +19,9 @@ export default function Home() {
         priority
       /> */}
       <div className="flex flex-col  items-center justify-center gap-6   py-[5vh] sm:py-[10vh]">
+        <div className="mt-28 inline-block rounded-lg bg-gray-100 px-3 py-1 text-sm dark:bg-gray-800 lg:mt-36">
+          features
+        </div>
         <h2 className="text-center text-3xl font-bold tracking-tighter duration-1000 ease-in-out animate-in fade-in slide-in-from-bottom-3 sm:text-5xl">
           Convert your video into an interactive experience
         </h2>
@@ -30,9 +33,6 @@ export default function Home() {
 
         <UrlInputForm />
 
-        <div className="mt-28 inline-block rounded-lg bg-gray-100 px-3 py-1 text-sm dark:bg-gray-800 lg:mt-36">
-          features
-        </div>
         <img className="mt-6" src="/flow.svg" alt="flow" />
       </div>
 

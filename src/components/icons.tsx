@@ -297,37 +297,37 @@ export const Icons = {
         d="M10 16H6"
         stroke="#1C274C"
         stroke-width="1.5"
-        stroke-linecap="round"
+        strokeLinecap="round"
       />
       <path
         d="M14 13H18"
         stroke="#1C274C"
         stroke-width="1.5"
-        stroke-linecap="round"
+        strokeLinecap="round"
       />
       <path
         d="M14 16H12.5"
         stroke="#1C274C"
         stroke-width="1.5"
-        stroke-linecap="round"
+        strokeLinecap="round"
       />
       <path
         d="M9.5 13H11.5"
         stroke="#1C274C"
         stroke-width="1.5"
-        stroke-linecap="round"
+        strokeLinecap="round"
       />
       <path
         d="M18 16H16.5"
         stroke="#1C274C"
         stroke-width="1.5"
-        stroke-linecap="round"
+        strokeLinecap="round"
       />
       <path
         d="M6 13H7"
         stroke="#1C274C"
         stroke-width="1.5"
-        stroke-linecap="round"
+        strokeLinecap="round"
       />
     </svg>
   ),
