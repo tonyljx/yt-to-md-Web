@@ -4,7 +4,7 @@ import fs from "fs";
 import path from "path";
 import matter from "gray-matter";
 import { MDXRemote } from "next-mdx-remote/rsc";
-import { compareDesc, format, parseISO } from "date-fns";
+import { format } from "date-fns";
 interface PostProps {
   params: {
     slug: string;
@@ -33,7 +33,7 @@ export async function generateStaticParams() {
     slug: filename.replace(".mdx", ""),
   }));
 
-  console.log(paths);
+  // console.log(paths);
 
   return paths;
 }
