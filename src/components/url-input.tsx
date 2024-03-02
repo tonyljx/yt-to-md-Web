@@ -17,6 +17,7 @@ import { Input } from "@/components/ui/input";
 import { CornerDownLeft, CornerDownLeftIcon, Loader2, X } from "lucide-react";
 import toast from "react-hot-toast";
 import { useRouter } from "next/navigation";
+import { MyCard } from "./card";
 
 // 定义 YouTube URL 的正则表达式
 const youtubeUrlRegex =
@@ -43,9 +44,18 @@ export const formSchema = z.object({
 
 type Props = {};
 
+interface IParsed {
+  title: string;
+  description: string;
+}
+
 export default function UrlInputForm({}: Props) {
   const [loading, setLoading] = useState(false);
   const [parseLoading, setParseLoading] = useState(false);
+  const [parsedContent, setParsedContent] = useState<IParsed>({
+    title: "",
+    description: "",
+  });
 
   const router = useRouter();
   // 1. Define your form.
@@ -126,7 +136,11 @@ export default function UrlInputForm({}: Props) {
         }
       })
       .then((data) => {
-        toast.success(`${data?.message} parse success`);
+        toast.success(`parse success`);
+        setParsedContent({
+          title: data?.items[0]?.snippet?.title,
+          description: data?.items[0]?.snippet?.description,
+        });
       })
       .catch((error) => {
         console.error("Error:", error);
@@ -150,9 +164,9 @@ export default function UrlInputForm({}: Props) {
             <FormItem>
               {/* <FormLabel>Youtube Url</FormLabel> */}
               <FormControl>
-                <div className="relative flex w-full items-center gap-3 self-start">
+                <div className="relative  flex w-full items-center justify-center gap-3 self-start">
                   <Input
-                    className=" w-full rounded-md border pr-[2rem]  focus-visible:ring-0 focus-visible:ring-transparent focus-visible:ring-offset-0  md:w-[28vw] "
+                    className="w-full rounded-md border pr-[2rem]  focus-visible:ring-0 focus-visible:ring-transparent focus-visible:ring-offset-0  md:w-[28vw] "
                     placeholder="Input a youtube URL"
                     onKeyDown={(e) => {
                       if (e.key === "Enter") {
@@ -162,7 +176,16 @@ export default function UrlInputForm({}: Props) {
                     }}
                     {...field}
                   />
-                  <CornerDownLeftIcon className="absolute right-2 h-6 w-6" />
+                  <Button
+                    type="submit"
+                    className="flex items-center gap-2"
+                    ref={submitRef}
+                    disabled={loading}
+                  >
+                    {loading && <Loader2 className="animate-spin" />}
+                    Submit
+                  </Button>
+                  {/* <CornerDownLeftIcon className="absolute right-2 h-6 w-6" /> */}
                 </div>
               </FormControl>
               {/* <FormDescription>Youtube Url</FormDescription> */}
@@ -173,20 +196,20 @@ export default function UrlInputForm({}: Props) {
 
         {/* dynamic */}
         {/* Dynamic chapters */}
-        <div className="mt-6">
+        <div className="mx-auto mt-6">
           {fields.length > 0 && (
             <>
-              <h3 className="mb-2 text-lg font-semibold">
+              <h3 className="mb-2 text-center text-lg font-semibold">
                 Chapters (Optional)
               </h3>
-              <p className="duration-1200 mb-3 text-base text-gray-500 ease-in-out animate-in fade-in slide-in-from-bottom-4">
+              <p className="duration-1200 mb-3 text-center text-base text-gray-500 ease-in-out animate-in fade-in slide-in-from-bottom-4">
                 Help segment the video subtitles
               </p>
             </>
           )}
 
           {fields.map((field, index) => (
-            <div key={field.id} className="mb-2 flex gap-2">
+            <div key={field.id} className="mb-2 flex justify-center gap-2">
               <FormField
                 control={form.control}
                 name={`chapters.${index}.title`}
@@ -233,16 +256,6 @@ export default function UrlInputForm({}: Props) {
 
         <div className="mt-6 flex justify-center gap-3">
           <Button
-            type="submit"
-            className="flex items-center gap-2"
-            ref={submitRef}
-            disabled={loading}
-          >
-            {loading && <Loader2 className="animate-spin" />}
-            Submit
-          </Button>
-
-          <Button
             type="button"
             variant="secondary"
             onClick={() => append({ title: "", timestamp: "" })}
@@ -262,6 +275,20 @@ export default function UrlInputForm({}: Props) {
           </Button>
         </div>
       </form>
+
+      {/* parsed content */}
+      <div className="flex justify-center gap-2">
+        <MyCard
+          title="youtube title"
+          desc="use parse video below are youtube title"
+          content={parsedContent?.title}
+        />
+        <MyCard
+          title="youtube desc"
+          desc="use parse video below are youtube desc"
+          content={parsedContent?.description}
+        />
+      </div>
     </Form>
   );
 }

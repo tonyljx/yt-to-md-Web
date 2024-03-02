@@ -30,7 +30,7 @@ export default function RootLayout({
         className={cn("bg-background font-sans antialiased", fontSans.variable)}
       >
         <Header />
-        <main className="container  min-h-screen  gap-8 p-10 md:p-24 md:pt-10">
+        <main className="container  min-h-screen  gap-8 p-10 md:p-24 md:pt-0">
           {children}
         </main>
 
