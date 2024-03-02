@@ -1,7 +1,7 @@
 import { errorResponse } from "@/lib/request";
 
 export async function GET(request: Request) {
-  console.log("get 请求");
+  // console.log("get 请求");
   const { searchParams } = new URL(request.url);
   const videoId = searchParams.get("videoId");
   if (!videoId) {

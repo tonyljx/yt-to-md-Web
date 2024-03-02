@@ -4,6 +4,7 @@ import fs from "fs";
 import path from "path";
 import matter from "gray-matter";
 import { MDXRemote } from "next-mdx-remote/rsc";
+import { Tweet } from "react-tweet";
 import { format } from "date-fns";
 interface PostProps {
   params: {
@@ -56,6 +57,8 @@ function getPost({ slug }: { slug: string }) {
 export default async function PostPage({ params }: PostProps) {
   const post = await getPost(params);
 
+  const components = { Tweet };
+
   // 查到的文章
   // console.log("post slug", post)
   if (!post) {
@@ -72,7 +75,7 @@ export default async function PostPage({ params }: PostProps) {
       )}
       <p>{format(post.frontMatter.date, "LLLL d, yyyy")}</p>
       <hr className="my-4" />
-      <MDXRemote source={post.content} />
+      <MDXRemote source={post.content} components={components} />
       {/* <div className="" dangerouslySetInnerHTML={{ __html: post.body.html }} /> */}
     </article>
   );
