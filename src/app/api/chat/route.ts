@@ -14,7 +14,7 @@ export async function POST(request: Request) {
     // 2/ 上传json数据
     const messgae = requestJson?.chapters;
 
-    return new Response(JSON.stringify(result), {
+    return new Response(JSON.stringify("hello"), {
       status: 200,
       headers: {
         "Content-Type": "application/json",
