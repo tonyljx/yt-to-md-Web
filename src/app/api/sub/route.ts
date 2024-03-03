@@ -9,6 +9,15 @@ const SubtitleSchema = z.object({
 
 const SubtitlesSchema = z.array(SubtitleSchema);
 
+function errorRes(message: string) {
+  return new Response(JSON.stringify({ error: message }), {
+    status: 500,
+    headers: {
+      "Content-Type": "application/json",
+    },
+  });
+}
+
 async function fetchSubtitles(videoId: string) {
   const url = `https://subtitles-for-youtube.p.rapidapi.com/subtitles/${videoId}`;
   const options = {
@@ -36,22 +45,18 @@ async function fetchSubtitles(videoId: string) {
 }
 
 export async function GET(request: Request) {
-  console.log("get 请求");
+  console.log("get 字幕数据");
   const { searchParams } = new URL(request.url);
   const videoId = searchParams.get("videoId");
   if (!videoId) {
-    return new Response(JSON.stringify({ error: "videoId null" }), {
-      status: 500,
-      headers: {
-        "Content-Type": "application/json",
-      },
-    });
+    return errorRes("videoId required");
   }
+  const subtitle = await fetchSubtitles(videoId);
 
   // const subtitles = await fetchSubtitles(videoId);
   const res = await getVideo(videoId);
 
-  return new Response(JSON.stringify(res), {
+  return new Response(JSON.stringify({ ...res, subtitle }), {
     status: 200,
     headers: {
       "Content-Type": "application/json",
@@ -73,8 +78,16 @@ export async function POST(request: Request) {
   }
 
   try {
+    const requestJson = await request.json();
     const videoCnt = await getVideoCnt(videoId);
+
+    // 2/ 上传json数据
+    const chapters = requestJson?.chapters;
     if (videoCnt > 0) {
+      await prisma?.video.updateMany({
+        where: { videoId: videoId },
+        data: { chapters },
+      });
       return new Response(JSON.stringify({ message: "videoId exists" }), {
         status: 200,
         headers: {
@@ -82,13 +95,10 @@ export async function POST(request: Request) {
         },
       });
     }
-    const subtitles = await fetchSubtitles(videoId);
-    // 2/ 上传json数据
-    const requestJson = await request.json();
-    const chapters = requestJson?.chapters;
+
     const data = {
       videoId,
-      subtitle: subtitles,
+      // subtitle: subtitles,
       chapters,
     };
     let res = await prisma?.video.create({ data });
@@ -104,11 +114,6 @@ export async function POST(request: Request) {
     });
   } catch (error) {
     console.error(error);
-    return new Response(JSON.stringify({ error: "error" }), {
-      status: 500,
-      headers: {
-        "Content-Type": "application/json",
-      },
-    });
+    return errorRes("error ");
   }
 }

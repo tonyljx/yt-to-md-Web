@@ -15,7 +15,8 @@ export async function GET(request: Request) {
 
   // const subtitles = await fetchSubtitles(videoId);
   const res = await fetch(
-    `https://youtube.googleapis.com/youtube/v3/videos?part=snippet&id=zjkBMFhNj_g&key=${process.env.GOOGLE_API_KEY}`,
+    // zjkBMFhNj_g
+    `https://youtube.googleapis.com/youtube/v3/videos?part=snippet&id=${videoId}&key=${process.env.GOOGLE_API_KEY}`,
   );
   const json = await res.json();
   if (!res.ok) {

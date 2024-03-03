@@ -9,7 +9,6 @@ import highlight from "@bytemd/plugin-highlight";
 // import "bytemd/dist/index.min.css";
 import "bytemd/dist/index.css";
 import "highlight.js/styles/default.css";
-import styles from "./markdown-editor.module.css";
 import { Button } from "./ui/button";
 import { cn } from "@/lib/utils";
 const plugins = [
@@ -39,7 +38,7 @@ export default function MarkdownEditorOut({
   return (
     <div
       className={cn(
-        "prose lg:prose-lg dark:prose-invert flex h-full w-[50vw] flex-col gap-2",
+        "prose flex h-full flex-col gap-2 dark:prose-invert sm:prose-sm lg:prose-lg",
         className,
       )}
     >

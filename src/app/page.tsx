@@ -9,7 +9,7 @@ import { Suspense } from "react";
 
 export default function Home() {
   return (
-    <section className="flex flex-col items-center">
+    <section className="container flex flex-col items-center ">
       <div className="  min-h-screen space-y-8 ">
         <div className=" mt-16 flex flex-col items-center">
           <div className="inline-block rounded-lg bg-gray-100 px-3 py-1 text-sm dark:bg-gray-800 ">

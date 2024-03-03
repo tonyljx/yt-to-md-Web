@@ -34,9 +34,9 @@ export const formSchema = z.object({
     }),
   chapters: z.array(
     z.object({
-      title: z.string().min(1, { message: "Product Name is required" }),
+      title: z.string().min(1, { message: "chapter title required" }),
       timestamp: z.string().min(1, {
-        message: "Product Description is required",
+        message: "timestamp required",
       }),
     }),
   ),
@@ -137,10 +137,44 @@ export default function UrlInputForm({}: Props) {
       })
       .then((data) => {
         toast.success(`parse success`);
+        // (1) set Parsed content
+        const title = data?.items[0]?.snippet?.title;
+        const description = data?.items[0]?.snippet?.description;
         setParsedContent({
-          title: data?.items[0]?.snippet?.title,
-          description: data?.items[0]?.snippet?.description,
+          title: title,
+          description: description,
         });
+
+        // (2) regex: use regex to parse the descrtiption
+        const chaptersSchema = formSchema.shape.chapters;
+        // 先定位 "Chapters:" 部分
+        const chaptersIndex = description.indexOf("Chapters:");
+        const chaptersText = description.substring(chaptersIndex);
+        // 匹配章节标题和时间戳
+        const pattern =
+          /(\d{2}:\d{2}:\d{2})\s+(.*?)(?=\s+\d{2}:\d{2}:\d{2}|$)/g;
+        const matches = [...chaptersText.matchAll(pattern)];
+
+        const chapters = matches.map((match) => ({
+          timestamp: match[1],
+          title: match[2],
+        }));
+        console.log(chapters);
+
+        try {
+          const validatedChapters = chaptersSchema.parse(chapters);
+
+          validatedChapters.forEach((chapter) => {
+            append(chapter);
+          });
+        } catch (error) {
+          toast.error("parse chapter info error");
+          if (error instanceof z.ZodError) {
+            console.error(error.errors);
+          } else {
+            console.error("Unexpected error:", error);
+          }
+        }
       })
       .catch((error) => {
         console.error("Error:", error);

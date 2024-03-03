@@ -25,6 +25,11 @@ interface ChapterContent {
   [key: string]: string;
 }
 
+function parseTimestamp(timestamp: string): number {
+  const [hours, minutes, seconds] = timestamp.split(":").map(Number);
+  return hours * 3600 + minutes * 60 + seconds;
+}
+
 export default function VideoPage({ params }: { params: { id: string } }) {
   const [markdown, setMarkdown] = useState<string>("");
   const [chapterContent, setChapterContent] = useState<ChapterContent>({});
@@ -47,16 +52,20 @@ export default function VideoPage({ params }: { params: { id: string } }) {
         let md = "";
         const content: ChapterContent = {};
         data.chapters.forEach((chapter, index) => {
-          const nextTimestamp =
+          const chapterStartSeconds = parseTimestamp(chapter.timestamp);
+          const nextChapterStartSeconds =
             index < data.chapters.length - 1
-              ? parseFloat(data.chapters[index + 1].timestamp)
+              ? parseTimestamp(data.chapters[index + 1].timestamp)
               : Infinity;
+
           const subtitles = data.subtitle.filter(
             (sub) =>
-              sub.start >= parseFloat(chapter.timestamp) &&
-              sub.start < nextTimestamp,
+              sub.start >= chapterStartSeconds &&
+              sub.start < nextChapterStartSeconds,
           );
-          const chapterText = subtitles.map((sub) => sub.text).join("\n\n");
+
+          // const chapterText = subtitles.map((sub) => sub.text).join("\n\n");
+          const chapterText = subtitles.map((sub) => sub.text).join(" ");
 
           md += `## ${chapter.title}\n\n${chapterText}\n\n`;
           content[chapter.title] = chapterText;
@@ -75,21 +84,20 @@ export default function VideoPage({ params }: { params: { id: string } }) {
   }, [params.id]);
 
   return (
-    <div className="container">
-      <Header />
+    <div className="">
       {isLoading ? (
         <Loader2 className="animate-spin" />
       ) : (
         <div className="w-full justify-center">
           <h1>Markdown</h1>
-          {/* <pre>{markdown}</pre> */}
-          {/* <h1>Chapter Content</h1> */}
-          {/* <pre>{JSON.stringify(chapterContent, null, 2)}</pre> */}
-          <MarkdownEditorOut
-            value={markdown}
-            setValue={setMarkdown}
-            className="mx-auto w-full"
-          />
+
+          <div className="grid grid-cols-2">
+            <MarkdownEditorOut
+              value={markdown}
+              setValue={setMarkdown}
+              className="mx-auto w-full"
+            />
+          </div>
         </div>
       )}
     </div>
