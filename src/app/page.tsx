@@ -16,7 +16,7 @@ export default function Home() {
             features
           </div>
           <h2 className="text-center text-3xl font-bold tracking-tighter duration-1000 ease-in-out animate-in fade-in slide-in-from-bottom-3 sm:text-5xl">
-            Convert your video into an interactive experience
+            Convert your video into a markdown file, easily
           </h2>
         </div>
 
